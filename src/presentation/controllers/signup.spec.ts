@@ -1,9 +1,13 @@
 import { SignUpController } from './signup';
 import { MissingParamError } from './../errors/httpErrors';
 
+const makeSut = (): SignUpController => {
+  return new SignUpController();
+};
+
 describe('SignUp Controller', () => {
   it('must return an error when user left name empty', () => {
-    const sut = new SignUpController();
+    const sut = makeSut();
     const httpRequest = {
       body: {
         email: 'anyEmail@email.com',
@@ -19,7 +23,7 @@ describe('SignUp Controller', () => {
   });
 
   it('must return an error when user left email empty', () => {
-    const sut = new SignUpController();
+    const sut = makeSut();
     const httpRequest = {
       body: {
         name: 'anyName',
@@ -35,7 +39,7 @@ describe('SignUp Controller', () => {
   });
 
   it('must return an error when user left password empty', () => {
-    const sut = new SignUpController();
+    const sut = makeSut();
     const httpRequest = {
       body: {
         name: 'anyName',
@@ -50,7 +54,7 @@ describe('SignUp Controller', () => {
   });
 
   it('must return an error when user left password confirmation empty', () => {
-    const sut = new SignUpController();
+    const sut = makeSut();
     const httpRequest = {
       body: {
         name: 'anyName',
