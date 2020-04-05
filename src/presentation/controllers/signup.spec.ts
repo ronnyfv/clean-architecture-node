@@ -13,16 +13,22 @@ const makeSut = (
   }
 
   class AddAccount {
-    add(name: string, email: string, password: string): AccountModel {
-      if (userThrowError) {
-        throw new Error();
-      }
+    async add(
+      name: string,
+      email: string,
+      password: string,
+    ): Promise<AccountModel> {
+      return await new Promise((resolve, reject) => {
+        if (userThrowError) {
+          reject(new Error());
+        }
 
-      return {
-        id: 1,
-        name: name,
-        email: email,
-      };
+        resolve({
+          id: 1,
+          name: name,
+          email: email,
+        });
+      });
     }
   }
 
@@ -34,7 +40,7 @@ const makeSut = (
 };
 
 describe('SignUp Controller', () => {
-  it('must return an error when user left name empty', () => {
+  it('must return an error when user left name empty', async () => {
     const sut = makeSut();
     const httpRequest = {
       body: {
@@ -44,13 +50,13 @@ describe('SignUp Controller', () => {
       },
     };
 
-    const httpResponse = sut.handle(httpRequest);
+    const httpResponse = await sut.handle(httpRequest);
 
     expect(httpResponse.statusCode).toEqual(400);
     expect(httpResponse.body).toEqual(new MissingParamError('name'));
   });
 
-  it('must return an error when user left email empty', () => {
+  it('must return an error when user left email empty', async () => {
     const sut = makeSut();
     const httpRequest = {
       body: {
@@ -60,13 +66,13 @@ describe('SignUp Controller', () => {
       },
     };
 
-    const httpResponse = sut.handle(httpRequest);
+    const httpResponse = await sut.handle(httpRequest);
 
     expect(httpResponse.statusCode).toEqual(400);
     expect(httpResponse.body).toEqual(new MissingParamError('email'));
   });
 
-  it('must return an error when user left password empty', () => {
+  it('must return an error when user left password empty', async () => {
     const sut = makeSut();
     const httpRequest = {
       body: {
@@ -75,13 +81,13 @@ describe('SignUp Controller', () => {
       },
     };
 
-    const httpResponse = sut.handle(httpRequest);
+    const httpResponse = await sut.handle(httpRequest);
 
     expect(httpResponse.statusCode).toEqual(400);
     expect(httpResponse.body).toEqual(new MissingParamError('password'));
   });
 
-  it('must return an error when user left password confirmation empty', () => {
+  it('must return an error when user left password confirmation empty', async () => {
     const sut = makeSut();
     const httpRequest = {
       body: {
@@ -91,7 +97,7 @@ describe('SignUp Controller', () => {
       },
     };
 
-    const httpResponse = sut.handle(httpRequest);
+    const httpResponse = await sut.handle(httpRequest);
 
     expect(httpResponse.statusCode).toEqual(400);
     expect(httpResponse.body).toEqual(
@@ -99,7 +105,7 @@ describe('SignUp Controller', () => {
     );
   });
 
-  it('must return an error when password confirmation fails', () => {
+  it('must return an error when password confirmation fails', async () => {
     const sut = makeSut();
     const httpRequest = {
       body: {
@@ -110,7 +116,7 @@ describe('SignUp Controller', () => {
       },
     };
 
-    const httpResponse = sut.handle(httpRequest);
+    const httpResponse = await sut.handle(httpRequest);
 
     expect(httpResponse.statusCode).toEqual(400);
     expect(httpResponse.body).toEqual(
@@ -118,7 +124,7 @@ describe('SignUp Controller', () => {
     );
   });
 
-  it('must return an error when invalid email is provided', () => {
+  it('must return an error when invalid email is provided', async () => {
     const sut = makeSut(false);
     const httpRequest = {
       body: {
@@ -129,13 +135,13 @@ describe('SignUp Controller', () => {
       },
     };
 
-    const httpResponse = sut.handle(httpRequest);
+    const httpResponse = await sut.handle(httpRequest);
 
     expect(httpResponse.statusCode).toEqual(400);
     expect(httpResponse.body).toEqual(new InvalidParamError('email'));
   });
 
-  it('must return an error when an user with the received email already exists', () => {
+  it('must return an error when an user with the received email already exists', async () => {
     const sut = makeSut(true, true);
     const httpRequest = {
       body: {
@@ -146,13 +152,13 @@ describe('SignUp Controller', () => {
       },
     };
 
-    const httpResponse = sut.handle(httpRequest);
+    const httpResponse = await sut.handle(httpRequest);
 
     expect(httpResponse.statusCode).toEqual(400);
     expect(httpResponse.body).toEqual(new InvalidParamError('email'));
   });
 
-  it('must create an user with the filled values', () => {
+  it('must create an user with the filled values', async () => {
     const sut = makeSut();
     const httpRequest = {
       body: {
@@ -163,7 +169,7 @@ describe('SignUp Controller', () => {
       },
     };
 
-    const httpResponse = sut.handle(httpRequest);
+    const httpResponse = await sut.handle(httpRequest);
 
     expect(httpResponse.statusCode).toEqual(200);
     expect(httpResponse.body).toEqual({
