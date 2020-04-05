@@ -6,3 +6,4 @@ const a = function (): number {
 };
 
 a();
+
