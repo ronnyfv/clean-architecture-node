@@ -48,4 +48,22 @@ describe('SignUp Controller', () => {
     expect(httpResponse.statusCode).toEqual(400);
     expect(httpResponse.body).toEqual(new MissingParamError('password'));
   });
+
+  it('must return an error when user left password confirmation empty', () => {
+    const sut = new SignUpController();
+    const httpRequest = {
+      body: {
+        name: 'anyName',
+        email: 'anyEmail@email.com',
+        password: 'anyPassword',
+      },
+    };
+
+    const httpResponse = sut.handle(httpRequest);
+
+    expect(httpResponse.statusCode).toEqual(400);
+    expect(httpResponse.body).toEqual(
+      new MissingParamError('passwordConfirmation'),
+    );
+  });
 });
