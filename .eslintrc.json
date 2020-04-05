@@ -37,6 +37,7 @@
           "delimiter": "semi",
           "requireLast": true
       }
-    }]
+    }],
+    "@typescript-eslint/space-before-function-paren": 0
   }
 }
