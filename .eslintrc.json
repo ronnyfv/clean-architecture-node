@@ -5,7 +5,27 @@
   },
   "rules": {
     "semi": ["error", "always"],
-    "eol-last": "error",
-    "no-multiple-empty-lines": ["error", { "max": 1 }]
+    "eol-last": ["error", "always"],
+    "no-multiple-empty-lines": ["error", { "max": 1 }],
+    "import/no-unresolved": [
+      0,
+      {
+        "caseSensitive": false
+      }
+    ],
+    "import/extensions": 0,
+    "import/prefer-default-export": 0,
+    "import/no-named-as-default": 0,
+    "import/no-extraneous-dependencies": 0,
+    "no-multi-spaces": "error",
+    "padded-blocks": ["error", "never"],
+    "block-spacing": "error",
+    "no-console": "error",
+    "func-call-spacing": ["error", "never"],
+    "space-before-blocks": "error",
+    "yoda": "error",
+    "no-useless-catch": "error",
+    "no-useless-return": "error",
+    "no-unneeded-ternary": "error"
   }
 }
