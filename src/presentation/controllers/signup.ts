@@ -1,6 +1,6 @@
 import { HttpRequest, HttpResponse } from '../protocols/http';
 import { MissingParamError, InvalidParamError } from '../errors/httpErrors';
-import { badRequest } from '../helpers/httpHelper';
+import { badRequest, okRequest } from '../helpers/httpHelper';
 import { Controller } from '../protocols/controller';
 import { EmailValidator } from '../protocols/emailValidator';
 import { AddAccount } from '../../domain/useCases/addAccount';
@@ -36,16 +36,17 @@ class SignUpController implements Controller {
       return badRequest(new InvalidParamError('passwordConfirmation'));
     }
 
-    const account = this.addAccount.add(
-      httpRequest.body.name,
-      httpRequest.body.email,
-      httpRequest.body.password,
-    );
+    try {
+      const account = this.addAccount.add(
+        httpRequest.body.name,
+        httpRequest.body.email,
+        httpRequest.body.password,
+      );
 
-    return {
-      statusCode: 200,
-      body: account,
-    };
+      return okRequest(account);
+    } catch (err) {
+      return badRequest(new InvalidParamError('email'));
+    }
   }
 }
 

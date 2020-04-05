@@ -2,7 +2,10 @@ import { SignUpController } from './signup';
 import { MissingParamError, InvalidParamError } from './../errors/httpErrors';
 import { AccountModel } from '../../domain/models/account';
 
-const makeSut = (emailValidatorReturn = true): SignUpController => {
+const makeSut = (
+  emailValidatorReturn = true,
+  userThrowError = false,
+): SignUpController => {
   class EmailValidator {
     isValid(email: string): boolean {
       return emailValidatorReturn;
@@ -11,6 +14,10 @@ const makeSut = (emailValidatorReturn = true): SignUpController => {
 
   class AddAccount {
     add(name: string, email: string, password: string): AccountModel {
+      if (userThrowError) {
+        throw new Error();
+      }
+
       return {
         id: 1,
         name: name,
@@ -117,6 +124,23 @@ describe('SignUp Controller', () => {
       body: {
         name: 'anyName',
         email: 'invalid_email@email.com',
+        password: 'anyPassword',
+        passwordConfirmation: 'anyPassword',
+      },
+    };
+
+    const httpResponse = sut.handle(httpRequest);
+
+    expect(httpResponse.statusCode).toEqual(400);
+    expect(httpResponse.body).toEqual(new InvalidParamError('email'));
+  });
+
+  it('must return an error when an user with the received email already exists', () => {
+    const sut = makeSut(true, true);
+    const httpRequest = {
+      body: {
+        name: 'anyName',
+        email: 'emailWithExistingUser@email.com',
         password: 'anyPassword',
         passwordConfirmation: 'anyPassword',
       },

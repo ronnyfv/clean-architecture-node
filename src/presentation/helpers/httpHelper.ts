@@ -11,4 +11,9 @@ const badRequest = (error: Error): HttpResponse => ({
   body: error,
 });
 
-export { badRequest, serverError };
+const okRequest = (body: any): HttpResponse => ({
+  statusCode: 200,
+  body,
+});
+
+export { okRequest, badRequest, serverError };
