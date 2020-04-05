@@ -79,6 +79,25 @@ describe('SignUp Controller', () => {
     );
   });
 
+  it('must return an error when password confirmation fails', () => {
+    const sut = makeSut();
+    const httpRequest = {
+      body: {
+        name: 'anyName',
+        email: 'anyEmail@email.com',
+        password: 'anyPassword',
+        passwordConfirmation: 'anotherPassword',
+      },
+    };
+
+    const httpResponse = sut.handle(httpRequest);
+
+    expect(httpResponse.statusCode).toEqual(400);
+    expect(httpResponse.body).toEqual(
+      new InvalidParamError('passwordConfirmation'),
+    );
+  });
+
   it('must return an error when invalid email is provided', () => {
     const sut = makeSut(false);
     const httpRequest = {
@@ -94,21 +113,5 @@ describe('SignUp Controller', () => {
 
     expect(httpResponse.statusCode).toEqual(400);
     expect(httpResponse.body).toEqual(new InvalidParamError('email'));
-  });
-
-  it('must return an success when valid email is provided', () => {
-    const sut = makeSut();
-    const httpRequest = {
-      body: {
-        name: 'anyName',
-        email: 'validemail@email.com',
-        password: 'anyPassword',
-        passwordConfirmation: 'anyPassword',
-      },
-    };
-
-    const httpResponse = sut.handle(httpRequest);
-
-    expect(httpResponse.statusCode).toEqual(200);
   });
 });
