@@ -1,5 +1,6 @@
 import { SignUpController } from './signup';
 import { MissingParamError, InvalidParamError } from './../errors/httpErrors';
+import { AccountModel } from '../../domain/models/account';
 
 const makeSut = (emailValidatorReturn = true): SignUpController => {
   class EmailValidator {
@@ -8,9 +9,21 @@ const makeSut = (emailValidatorReturn = true): SignUpController => {
     }
   }
 
+  class AddAccount {
+    add(name: string, email: string, password: string): AccountModel {
+      return {
+        id: 1,
+        name: name,
+        email: email,
+      };
+    }
+  }
+
+  const addAccount = new AddAccount();
+
   const emailValidator = new EmailValidator();
 
-  return new SignUpController(emailValidator);
+  return new SignUpController(emailValidator, addAccount);
 };
 
 describe('SignUp Controller', () => {
@@ -113,5 +126,26 @@ describe('SignUp Controller', () => {
 
     expect(httpResponse.statusCode).toEqual(400);
     expect(httpResponse.body).toEqual(new InvalidParamError('email'));
+  });
+
+  it('must create an user with the filled values', () => {
+    const sut = makeSut();
+    const httpRequest = {
+      body: {
+        name: 'anyName',
+        email: 'anyEmail@email.com',
+        password: 'anyPassword',
+        passwordConfirmation: 'anyPassword',
+      },
+    };
+
+    const httpResponse = sut.handle(httpRequest);
+
+    expect(httpResponse.statusCode).toEqual(200);
+    expect(httpResponse.body).toEqual({
+      id: 1,
+      name: 'anyName',
+      email: 'anyEmail@email.com',
+    });
   });
 });
