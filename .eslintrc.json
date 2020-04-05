@@ -26,6 +26,7 @@
     "yoda": "error",
     "no-useless-catch": "error",
     "no-useless-return": "error",
-    "no-unneeded-ternary": "error"
+    "no-unneeded-ternary": "error",
+    "@typescript-eslint/strict-boolean-expressions": 0
   }
 }
