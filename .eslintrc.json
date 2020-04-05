@@ -27,6 +27,16 @@
     "no-useless-catch": "error",
     "no-useless-return": "error",
     "no-unneeded-ternary": "error",
-    "@typescript-eslint/strict-boolean-expressions": 0
+    "@typescript-eslint/strict-boolean-expressions": 0,
+    "@typescript-eslint/member-delimiter-style": ["error", {
+      "multiline": {
+          "delimiter": "semi",
+          "requireLast": true
+      },
+      "singleline": {
+          "delimiter": "semi",
+          "requireLast": true
+      }
+    }]
   }
 }
