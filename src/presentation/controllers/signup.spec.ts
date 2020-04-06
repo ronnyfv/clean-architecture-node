@@ -1,17 +1,12 @@
 import { SignUpController } from './signup';
 import { MissingParamError, InvalidParamError } from './../errors/httpErrors';
 import { AccountModel } from '../../domain/models/account';
+import { EmailValidatorAdapter } from '../../utils/emailValidatorAdapter';
 
 const makeSut = (
   emailValidatorReturn = true,
   userThrowError = false,
 ): SignUpController => {
-  class EmailValidator {
-    isValid(email: string): boolean {
-      return emailValidatorReturn;
-    }
-  }
-
   class AddAccount {
     async add(
       name: string,
@@ -33,8 +28,7 @@ const makeSut = (
   }
 
   const addAccount = new AddAccount();
-
-  const emailValidator = new EmailValidator();
+  const emailValidator = new EmailValidatorAdapter();
 
   return new SignUpController(emailValidator, addAccount);
 };
@@ -129,7 +123,7 @@ describe('SignUp Controller', () => {
     const httpRequest = {
       body: {
         name: 'anyName',
-        email: 'invalid_email@email.com',
+        email: 'invalidemailemail.com',
         password: 'anyPassword',
         passwordConfirmation: 'anyPassword',
       },
