@@ -16,7 +16,13 @@ describe('SignUp Routes', () => {
         password: '123',
         passwordConfirmation: '123',
       })
-      .expect(200);
+      .expect(200)
+      .then((response) => {
+        expect(response.body.name).toEqual('name');
+        expect(response.body.email).toEqual('validemail@email.com');
+        expect(response.body.id).toBeTruthy();
+        expect(response.body.password).toBeFalsy();
+      });
 
     await MongoHelper.disconnect();
   });
