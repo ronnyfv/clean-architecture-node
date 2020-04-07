@@ -17,6 +17,13 @@ const MongoHelper = {
   getCollection(name: string): Collection {
     return this.client.db().collection(name);
   },
+
+  parseEntity({ _id, ...collectionRest }: any) {
+    return {
+      id: _id,
+      ...collectionRest,
+    };
+  },
 };
 
 export { MongoHelper };

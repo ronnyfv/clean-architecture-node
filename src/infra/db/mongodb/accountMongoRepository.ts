@@ -17,15 +17,11 @@ class AccountMongoRepository implements AddAccountRepository {
     });
 
     const {
-      _id,
       password: accountPassword,
-      ...accountWithoutIdAndPassword
+      ...accountWithoutPassword
     } = result.ops[0];
 
-    return {
-      id: _id,
-      ...accountWithoutIdAndPassword,
-    };
+    return MongoHelper.parseEntity(accountWithoutPassword);
   }
 }
 
