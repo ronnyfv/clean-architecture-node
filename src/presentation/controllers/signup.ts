@@ -37,17 +37,13 @@ class SignUpController implements Controller {
         return badRequest(new InvalidParamError('passwordConfirmation'));
       }
 
-      try {
-        const account = await this.addAccount.add(
-          httpRequest.body.name,
-          httpRequest.body.email,
-          httpRequest.body.password,
-        );
+      const account = await this.addAccount.add(
+        httpRequest.body.name,
+        httpRequest.body.email,
+        httpRequest.body.password,
+      );
 
-        return okRequest(account);
-      } catch (err) {
-        return badRequest(new InvalidParamError('email'));
-      }
+      return okRequest(account);
     } catch (err) {
       return serverError();
     }
