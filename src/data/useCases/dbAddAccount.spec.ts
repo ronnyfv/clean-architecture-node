@@ -21,7 +21,7 @@ const makeSut = (): AddAccount => {
     ): Promise<AccountModel> {
       return await new Promise((resolve, reject) => {
         resolve({
-          id: 111,
+          id: '111',
           name: 'validName',
           email: 'validEmail@email.com',
         });
@@ -46,7 +46,7 @@ describe('DbAddAccount', () => {
     );
 
     expect(account).toEqual({
-      id: 111,
+      id: '111',
       name: 'validName',
       email: 'validEmail@email.com',
     });
