@@ -1,10 +1,9 @@
-import { AddAccount } from '../../domain/useCases/addAccount';
 import { DbAddAccount } from './dbAddAccount';
 import { AccountMongoRepository } from '../../infra/db/mongodb/accountMongoRepository';
 import { BcryptAdapter } from '../../infra/cryptography/bcryptAdapter';
 import { MongoHelper } from '../../infra/db/mongodb/mongoHelper';
 
-const makeSut = (): AddAccount => {
+const makeSut = (): DbAddAccount => {
   const addAccountRepository = new AccountMongoRepository();
   const bcryptAdapter = new BcryptAdapter();
 

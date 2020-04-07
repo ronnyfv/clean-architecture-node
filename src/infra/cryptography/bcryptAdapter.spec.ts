@@ -1,9 +1,8 @@
 import bcrypt from 'bcrypt';
 
 import { BcryptAdapter } from './bcryptAdapter';
-import { Encrypter } from '../../data/protocols/encrypter';
 
-const makeSut = (): Encrypter => new BcryptAdapter();
+const makeSut = (): BcryptAdapter => new BcryptAdapter();
 
 describe('Bcrypt Adapter', () => {
   it('must call bcrypt with correct values', async () => {
