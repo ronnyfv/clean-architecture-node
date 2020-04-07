@@ -1,8 +1,11 @@
 import { AddAccount } from '../../domain/useCases/addAccount';
 import { DbAddAccount } from './dbAddAccount';
+import { Encrypter } from '../protocols/encrypter';
+import { AddAccountRepository } from '../protocols/addAccountRepository';
+import { AccountModel } from '../../domain/models/account';
 
 const makeSut = (): AddAccount => {
-  class Encrypter {
+  class EncrypterAdapter implements Encrypter {
     async encrypt(value: string): Promise<string> {
       return await new Promise((resolve, reject) => {
         resolve('hashedValue');
@@ -10,13 +13,30 @@ const makeSut = (): AddAccount => {
     }
   }
 
-  const encrypter = new Encrypter();
+  class AddAccountRepositoryAdapter implements AddAccountRepository {
+    async add(
+      name: string,
+      email: string,
+      password: string,
+    ): Promise<AccountModel> {
+      return await new Promise((resolve, reject) => {
+        resolve({
+          id: 111,
+          name: 'validName',
+          email: 'validEmail@email.com',
+        });
+      });
+    }
+  }
 
-  return new DbAddAccount(encrypter);
+  const encrypter = new EncrypterAdapter();
+  const addAccountRepository = new AddAccountRepositoryAdapter();
+
+  return new DbAddAccount(encrypter, addAccountRepository);
 };
 
 describe('DbAddAccount', () => {
-  it('must crypto the password', async () => {
+  it('must create an account', async () => {
     const sut = makeSut();
 
     const account = await sut.add(

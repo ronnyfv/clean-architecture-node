@@ -1,12 +1,18 @@
 import { AddAccount } from '../../domain/useCases/addAccount';
 import { AccountModel } from '../../domain/models/account';
 import { Encrypter } from '../protocols/encrypter';
+import { AddAccountRepository } from '../protocols/addAccountRepository';
 
 class DbAddAccount implements AddAccount {
   private readonly encrypter: Encrypter;
+  private readonly addAccountRepository: AddAccountRepository;
 
-  constructor(encrypter: Encrypter) {
+  constructor(
+    encrypter: Encrypter,
+    addAccountRepository: AddAccountRepository,
+  ) {
     this.encrypter = encrypter;
+    this.addAccountRepository = addAccountRepository;
   }
 
   async add(
@@ -14,14 +20,15 @@ class DbAddAccount implements AddAccount {
     email: string,
     password: string,
   ): Promise<AccountModel> {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const hashedPassword = await this.encrypter.encrypt(password);
 
-    return {
-      id: 111,
+    const account = await this.addAccountRepository.add(
       name,
       email,
-    };
+      hashedPassword,
+    );
+
+    return account;
   }
 }
 
