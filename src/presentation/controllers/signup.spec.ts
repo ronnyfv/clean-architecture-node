@@ -1,34 +1,16 @@
 import { SignUpController } from './signup';
 import { MissingParamError, InvalidParamError } from './../errors/httpErrors';
-import { AccountModel } from '../../domain/models/account';
 import { EmailValidatorAdapter } from '../../utils/emailValidatorAdapter';
 import { ServerError } from '../errors/serverErrors';
+import { DbAddAccount } from '../../data/useCases/dbAddAccount';
+import { AccountMongoRepository } from '../../infra/db/mongodb/accountMongoRepository';
+import { BcryptAdapter } from '../../infra/cryptography/bcryptAdapter';
+import { MongoHelper } from '../../infra/db/mongodb/mongoHelper';
 
-const makeSut = (
-  emailValidatorReturn = true,
-  userThrowError = false,
-): SignUpController => {
-  class AddAccount {
-    async add(
-      name: string,
-      email: string,
-      password: string,
-    ): Promise<AccountModel> {
-      return await new Promise((resolve, reject) => {
-        if (userThrowError) {
-          reject(new Error());
-        }
-
-        resolve({
-          id: 1,
-          name: name,
-          email: email,
-        });
-      });
-    }
-  }
-
-  const addAccount = new AddAccount();
+const makeSut = (): SignUpController => {
+  const addAccountRepository = new AccountMongoRepository();
+  const bcryptAdapter = new BcryptAdapter();
+  const addAccount = new DbAddAccount(bcryptAdapter, addAccountRepository);
   const emailValidator = new EmailValidatorAdapter();
 
   return new SignUpController(emailValidator, addAccount);
@@ -130,7 +112,7 @@ describe('SignUp Controller', () => {
   });
 
   it('must return an error when invalid email is provided', async () => {
-    const sut = makeSut(false);
+    const sut = makeSut();
     const httpRequest = {
       body: {
         name: 'anyName',
@@ -146,25 +128,11 @@ describe('SignUp Controller', () => {
     expect(httpResponse.body).toEqual(new InvalidParamError('email'));
   });
 
-  it('must return an error when an user with the received email already exists', async () => {
-    const sut = makeSut(true, true);
-    const httpRequest = {
-      body: {
-        name: 'anyName',
-        email: 'emailWithExistingUser@email.com',
-        password: 'anyPassword',
-        passwordConfirmation: 'anyPassword',
-      },
-    };
-
-    const httpResponse = await sut.handle(httpRequest);
-
-    expect(httpResponse.statusCode).toEqual(400);
-    expect(httpResponse.body).toEqual(new InvalidParamError('email'));
-  });
-
   it('must create an user with the filled values', async () => {
+    await MongoHelper.connect();
+
     const sut = makeSut();
+
     const httpRequest = {
       body: {
         name: 'anyName',
@@ -177,10 +145,11 @@ describe('SignUp Controller', () => {
     const httpResponse = await sut.handle(httpRequest);
 
     expect(httpResponse.statusCode).toEqual(200);
-    expect(httpResponse.body).toEqual({
-      id: 1,
-      name: 'anyName',
-      email: 'anyEmail@email.com',
-    });
+    expect(httpResponse.body.id).toBeTruthy();
+    expect(httpResponse.body.name).toEqual('anyName');
+    expect(httpResponse.body.email).toEqual('anyEmail@email.com');
+    expect(httpResponse.body.password).toBeFalsy();
+
+    await MongoHelper.disconnect();
   });
 });

@@ -1,42 +1,20 @@
 import { AddAccount } from '../../domain/useCases/addAccount';
 import { DbAddAccount } from './dbAddAccount';
-import { Encrypter } from '../protocols/encrypter';
-import { AddAccountRepository } from '../protocols/addAccountRepository';
-import { AccountModel } from '../../domain/models/account';
+import { AccountMongoRepository } from '../../infra/db/mongodb/accountMongoRepository';
+import { BcryptAdapter } from '../../infra/cryptography/bcryptAdapter';
+import { MongoHelper } from '../../infra/db/mongodb/mongoHelper';
 
 const makeSut = (): AddAccount => {
-  class EncrypterAdapter implements Encrypter {
-    async encrypt(value: string): Promise<string> {
-      return await new Promise((resolve, reject) => {
-        resolve('hashedValue');
-      });
-    }
-  }
+  const addAccountRepository = new AccountMongoRepository();
+  const bcryptAdapter = new BcryptAdapter();
 
-  class AddAccountRepositoryAdapter implements AddAccountRepository {
-    async add(
-      name: string,
-      email: string,
-      password: string,
-    ): Promise<AccountModel> {
-      return await new Promise((resolve, reject) => {
-        resolve({
-          id: '111',
-          name: 'validName',
-          email: 'validEmail@email.com',
-        });
-      });
-    }
-  }
-
-  const encrypter = new EncrypterAdapter();
-  const addAccountRepository = new AddAccountRepositoryAdapter();
-
-  return new DbAddAccount(encrypter, addAccountRepository);
+  return new DbAddAccount(bcryptAdapter, addAccountRepository);
 };
 
 describe('DbAddAccount', () => {
   it('must create and return an account', async () => {
+    await MongoHelper.connect();
+
     const sut = makeSut();
 
     const account = await sut.add(
@@ -45,10 +23,11 @@ describe('DbAddAccount', () => {
       'validPass',
     );
 
-    expect(account).toEqual({
-      id: '111',
-      name: 'validName',
-      email: 'validEmail@email.com',
-    });
+    expect(account.id).toBeTruthy();
+    expect(account.name).toEqual('validName');
+    expect(account.email).toEqual('validEmail@email.com');
+    expect(account.password).toBeFalsy();
+
+    await MongoHelper.disconnect();
   });
 });
