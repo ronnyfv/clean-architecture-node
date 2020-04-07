@@ -6,6 +6,7 @@ import { DbAddAccount } from '../../data/useCases/dbAddAccount';
 import { AccountMongoRepository } from '../../infra/db/mongodb/accountMongoRepository';
 import { BcryptAdapter } from '../../infra/cryptography/bcryptAdapter';
 import { MongoHelper } from '../../infra/db/mongodb/mongoHelper';
+import { envs } from '../../main/config/envs';
 
 const makeSut = (): SignUpController => {
   const addAccountRepository = new AccountMongoRepository();
@@ -129,7 +130,7 @@ describe('SignUp Controller', () => {
   });
 
   it('must create an user with the filled values', async () => {
-    await MongoHelper.connect();
+    await MongoHelper.connect(envs.MONGO_URL);
 
     const sut = makeSut();
 

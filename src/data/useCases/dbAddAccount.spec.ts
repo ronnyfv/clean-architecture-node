@@ -2,6 +2,7 @@ import { DbAddAccount } from './dbAddAccount';
 import { AccountMongoRepository } from '../../infra/db/mongodb/accountMongoRepository';
 import { BcryptAdapter } from '../../infra/cryptography/bcryptAdapter';
 import { MongoHelper } from '../../infra/db/mongodb/mongoHelper';
+import { envs } from '../../main/config/envs';
 
 const makeSut = (): DbAddAccount => {
   const addAccountRepository = new AccountMongoRepository();
@@ -12,7 +13,7 @@ const makeSut = (): DbAddAccount => {
 
 describe('DbAddAccount', () => {
   it('must create and return an account', async () => {
-    await MongoHelper.connect();
+    await MongoHelper.connect(envs.MONGO_URL);
 
     const sut = makeSut();
 
