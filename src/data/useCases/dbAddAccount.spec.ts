@@ -36,7 +36,7 @@ const makeSut = (): AddAccount => {
 };
 
 describe('DbAddAccount', () => {
-  it('must create an account', async () => {
+  it('must create and return an account', async () => {
     const sut = makeSut();
 
     const account = await sut.add(

@@ -2,6 +2,7 @@ import { SignUpController } from './signup';
 import { MissingParamError, InvalidParamError } from './../errors/httpErrors';
 import { AccountModel } from '../../domain/models/account';
 import { EmailValidatorAdapter } from '../../utils/emailValidatorAdapter';
+import { ServerError } from '../errors/serverErrors';
 
 const makeSut = (
   emailValidatorReturn = true,
@@ -34,6 +35,16 @@ const makeSut = (
 };
 
 describe('SignUp Controller', () => {
+  it('must return an server error as the default error', async () => {
+    const sut = makeSut();
+    const httpRequest = {};
+
+    const httpResponse = await sut.handle(httpRequest);
+
+    expect(httpResponse.statusCode).toEqual(500);
+    expect(httpResponse.body).toEqual(new ServerError());
+  });
+
   it('must return an error when user left name empty', async () => {
     const sut = makeSut();
     const httpRequest = {
